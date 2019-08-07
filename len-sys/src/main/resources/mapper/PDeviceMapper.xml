@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.len.mapper.PDeviceMapper">
+  <resultMap id="BaseResultMap" type="com.len.entity.PDevice">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="deviceId" jdbcType="VARCHAR" property="deviceid" />
+    <result column="devicePW" jdbcType="VARCHAR" property="devicepw" />
+    <result column="dname" jdbcType="VARCHAR" property="dname" />
+    <result column="connect" jdbcType="VARCHAR" property="connect" />
+    <result column="IP" jdbcType="VARCHAR" property="ip" />
+  </resultMap>
+
+
+  <select id="checkdevicename" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select count(1) from p_device where dname = #{dname}
+  </select>
+
+  <select id="count" resultType="java.lang.Integer">
+    select count(*) from p_device
+  </select>
+
+  <select id="getallIp" resultType="java.lang.String">
+    select IP from p_device
+  </select>
+
+  <select id="checkPW" parameterType="java.lang.String" resultType="java.lang.String">
+    select devicePW from p_device where deviceId = #{deviceId}
+  </select>
+
+  <select id="updateCon" parameterType="java.lang.String">
+    update p_device set connect=#{connect} where deviceId =#{deviceId}
+  </select>
+
+  <select id="selectListByPage" parameterType="com.len.entity.PDevice" resultMap="BaseResultMap">
+    select * from p_device p
+    left join p_user_device pu on p.deviceId=pu.deviceid
+
+    <if test="userId!=null">
+      where pu.userid=#{userId}
+    </if>
+
+  </select>
+
+  <select id="selectListByPage2" parameterType="com.len.entity.PDevice" resultMap="BaseResultMap">
+    select * from p_device where connect like '已连接'
+  </select>
+
+<select id="getalldevice" resultMap="BaseResultMap" >
+  select * from p_device
+</select>
+
+  <select id="selectbyeid" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select * from p_device where deviceId = #{eid}
+  </select>
+
+
+  <insert id="addDevice" parameterType="com.len.entity.PDevice">
+    insert into p_device (deviceId, devicePW, dname, connect, IP) VALUES
+    (#{deviceid},#{devicepw},#{dname},#{connect},#{ip})
+  </insert>
+
+  <update id="updateIp" parameterType="com.len.entity.PDevice">
+    update p_device set IP=#{inetAddress,jdbcType=VARCHAR} where deviceId =#{eid,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="deletebydeviceId" parameterType="java.lang.String">
+    delete from p_device where deviceId=#{eid}
+  </delete>
+
+  <select id="getConnects" parameterType="java.util.List" resultMap="BaseResultMap">
+    select * from p_device
+     where deviceId in <foreach collection="list" item="item" index="index"
+                                                    open="(" separator="," close=")">#{item}</foreach>
+
+  </select>
+</mapper>
